@@ -1,2 +1,3 @@
 # mi-universo
-esta es una de mis primeras paginas webs estoy buscandiq quien me ayude a mejorar
+esta es una de mis primeras paginas webs estoy buscando participantes para seguir mejorandola
+
