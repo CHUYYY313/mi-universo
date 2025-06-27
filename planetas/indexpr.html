@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MI UNIVERSO | Exploración Astronómica 3D</title>
+    <link rel="shortcut icon" href="./img/logo de pagina.png" type="image/x-png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Montserrat:wght@400;700&display=swap');
+        html, body {
+            scroll-behavior: smooth;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(120deg, #0a0a23 0%, #1a237e 100%);
+            color: #e3e6f3;
+            font-family: 'Montserrat', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            cursor: url('https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f680.png') 16 16, auto;
+            transition: cursor 0.2s;
+            overflow-x: hidden;
+        }
+        #stars, #nebula, #aurora {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+        #nebula {
+            opacity: 0.18;
+            filter: blur(18px) saturate(1.2);
+            background: radial-gradient(circle at 70% 30%, #00c3ff 0%, transparent 60%),
+                        radial-gradient(circle at 20% 80%, #ff5e62 0%, transparent 70%);
+            z-index: 1;
+        }
+        #aurora {
+            opacity: 0.13;
+            background: url('https://i.ibb.co/6b7n8pK/aurora2.gif') center/cover no-repeat;
+            z-index: 2;
+            mix-blend-mode: lighten;
+        }
+        header {
+            width: 100%;
+            background: rgba(18, 22, 40, 0.75);
+            box-shadow: 0 4px 24px #000a;
+            padding: 18px 0 10px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 2px solid #283593;
+            backdrop-filter: blur(8px);
+        }
+        .logo-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+        }
+        .logo-title img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            box-shadow: 0 2px 18px #00c3ffcc, 0 0 0 4px #fff2;
+            background: #fff2;
+            animation: logoPulse 2.5s infinite alternate;
+        }
+        @keyframes logoPulse {
+            from { box-shadow: 0 2px 18px #00c3ffcc, 0 0 0 4px #fff2;}
+            to { box-shadow: 0 8px 32px #ff5e62cc, 0 0 0 8px #ffd60033;}
+        }
+        .logo-title h1 {
+            font-size: 2.3em;
+            margin: 0;
+            font-family: 'Orbitron', 'Montserrat', Arial, sans-serif;
+            background: linear-gradient(90deg, #00c3ff, #ffff1c, #ff5e62);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 18px #00c3ff44, 0 0 2px #fff;
+            letter-spacing: 2.5px;
+            filter: drop-shadow(0 0 8px #00c3ff88);
+            animation: titleGlow 3s infinite alternate;
+        }
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 18px #00c3ff44, 0 0 2px #fff;}
+            to { text-shadow: 0 0 32px #ffff1c99, 0 0 12px #ff5e62cc;}
+        }
+        nav {
+            margin-top: 10px;
+        }
+        nav a {
+            color: #ffd600;
+            text-decoration: none;
+            font-weight: 700;
+            margin: 0 18px;
+            font-size: 1.12em;
+            letter-spacing: 0.7px;
+            transition: color 0.2s, border-bottom 0.2s;
+            padding-bottom: 2px;
+            border-bottom: 2px solid transparent;
+            font-family: 'Orbitron', 'Montserrat', Arial, sans-serif;
+        }
+        nav a:hover, nav a.active {
+            color: #4fc3f7;
+            border-bottom: 2px solid #4fc3f7;
+            text-shadow: 0 0 8px #fff8;
+        }
+        .container {
+            background: rgba(18, 22, 40, 0.88);
+            border-radius: 28px;
+            box-shadow: 0 8px 32px #00c3ff33, 0 1.5px 16px #000a;
+            padding: 54px 48px 42px 48px;
+            text-align: center;
+            max-width: 1400px;
+            margin-top: 54px;
+            margin-bottom: 36px;
+            z-index: 3;
+            position: relative;
+            animation: fadeIn 1.2s;
+            backdrop-filter: blur(6px);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: none;}
+        }
+        .author {
+            color: #4fc3f7;
+            font-size: 1.12em;
+            margin-bottom: 10px;
+            font-style: italic;
+            letter-spacing: 0.7px;
+        }
+        .planet-img {
+            width: 120px;
+            margin-bottom: 18px;
+            filter: drop-shadow(0 0 32px #4fc3f7);
+            animation: float 2.5s infinite ease-in-out alternate;
+        }
+        @keyframes float {
+            from { transform: translateY(0);}
+            to { transform: translateY(-14px);}
+        }
+        .features-title {
+            color: #ffd600;
+            font-size: 1.22em;
+            margin-bottom: 7px;
+            margin-top: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 8px #000a, 0 0 12px #ffd60044;
+            letter-spacing: 0.7px;
+        }
+        ul {
+            text-align: left;
+            margin: 0 auto 18px auto;
+            max-width: 560px;
+            color: #b3e5fc;
+            font-size: 1.12em;
+            padding-left: 1.2em;
+        }
+        .section {
+            margin: 40px 0 0 0;
+            padding: 28px 0 0 0;
+            border-top: 2px solid #283593;
+            position: relative;
+        }
+        .section-title {
+            color: #ffb300;
+            font-size: 1.22em;
+            margin-bottom: 14px;
+            font-weight: bold;
+            letter-spacing: 0.7px;
+            text-shadow: 0 0 8px #ffb30044;
+        }
+        .section:before {
+            content: "";
+            display: block;
+            position: absolute;
+            left: 50%; top: -12px;
+            transform: translateX(-50%);
+            width: 140px; height: 5px;
+            background: linear-gradient(90deg, #00c3ff, #ffff1c, #ff5e62);
+            border-radius: 2.5px;
+            opacity: 0.8;
+            box-shadow: 0 0 22px #00c3ff88;
+        }
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 44px;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .card {
+            background: rgba(30,40,80,0.65);
+            border-radius: 22px;
+            box-shadow: 0 2px 22px #00c3ff33, 0 1.5px 12px #000a;
+            padding: 26px 20px 20px 20px;
+            width: 340px;
+            min-height: 300px;
+            text-align: left;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            transition: transform 0.22s, box-shadow 0.22s, background 0.22s;
+            opacity: 0;
+            animation: cardIn 1s forwards;
+            backdrop-filter: blur(3px);
+            overflow: hidden;
+        }
+        .card:nth-child(1) { animation-delay: 0.2s;}
+        .card:nth-child(2) { animation-delay: 0.4s;}
+        .card:nth-child(3) { animation-delay: 0.6s;}
+        .card:nth-child(4) { animation-delay: 0.8s;}
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: none;}
+        }
+        .card:after {
+            content: "";
+            position: absolute;
+            top: -40px; left: -40px;
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, #00c3ff55 0%, transparent 80%);
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.3s;
+        }
+        .card:hover:after {
+            opacity: 0.9;
+        }
+        .card:hover {
+            transform: translateY(-12px) scale(1.07);
+            box-shadow: 0 12px 40px #00c3ffcc, 0 2px 18px #ff5e62aa;
+            background: rgba(30,40,80,0.92);
+            z-index: 2;
+        }
+        .card img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 16px #00c3ff55;
+        }
+        .card-title {
+            font-size: 1.22em;
+            color: #ffd600;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-shadow: 0 0 8px #ffd60044;
+            font-family: 'Orbitron', 'Montserrat', Arial, sans-serif;
+        }
+        .card-desc {
+            font-size: 1.08em;
+            color: #b3e5fc;
+            margin-bottom: 12px;
+            letter-spacing: 0.3px;
+        }
+        .btn-ingresar, .btn-espacio, .btn-extras, .btn-aprende {
+            background: linear-gradient(90deg, #00c3ff, #ffff1c, #ff5e62);
+            color: #222;
+            font-weight: bold;
+            font-size: 1.12em;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 22px;
+            cursor: pointer;
+            box-shadow: 0 2px 14px #0007;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 0 0 0;
+            text-shadow: 0 0 8px #fff8;
+            font-family: 'Orbitron', 'Montserrat', Arial, sans-serif;
+        }
+        .btn-ingresar:hover, .btn-espacio:hover, .btn-extras:hover, .btn-aprende:hover {
+            background: linear-gradient(90deg, #ff5e62, #ffff1c, #00c3ff);
+            color: #fff;
+            transform: scale(1.08);
+            box-shadow: 0 0 22px #ff5e62bb;
+        }
+        .footer {
+            margin-top: 54px;
+            color: #b0bec5;
+            font-size: 1.08em;
+            text-align: center;
+            z-index: 2;
+            position: relative;
+            border-top: 1.5px solid #283593;
+            padding-top: 22px;
+            background: rgba(18, 22, 40, 0.7);
+            backdrop-filter: blur(2px);
+        }
+        .footer .footer-glow {
+            display: block;
+            margin: 0 auto 12px auto;
+            width: 180px;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #00c3ff, #ffff1c, #ff5e62);
+            box-shadow: 0 0 22px #00c3ff88;
+            opacity: 0.7;
+        }
+        .social {
+            margin-top: 14px;
+        }
+        .social-link {
+            display: inline-block;
+            margin: 0 10px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: #222;
+            overflow: hidden;
+            vertical-align: middle;
+            transition: box-shadow 0.2s, background 0.2s, transform 0.2s;
+            box-shadow: 0 2px 12px #00c3ff55;
+            position: relative;
+        }
+        .social-icon {
+            width: 100%;
+            height: 100%;
+            padding: 8px;
+            filter: grayscale(1) brightness(1.3);
+            transition: filter 0.2s;
+        }
+        /* Animaciones GIF al pasar el mouse */
+        .social-link.github:hover .social-icon {
+            content: url('https://media.giphy.com/media/LMt9638dO8dftAjtco/giphy.gif');
+            filter: none;
+        }
+        .social-link.twitter:hover .social-icon {
+            content: url('https://media.giphy.com/media/1BXa2alBjrCXC/giphy.gif');
+            filter: none;
+        }
+        .social-link.facebook:hover .social-icon {
+            content: url('https://media.giphy.com/media/3og0IPxMM0erATueVW/giphy.gif');
+            filter: none;
+        }
+        .social-link.instagram:hover .social-icon {
+            content: url('https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif');
+            filter: none;
+        }
+        .social-link.email:hover .social-icon {
+            content: url('https://media.giphy.com/media/3o7TKtnuHOHHUjR38Y/giphy.gif');
+            filter: none;
+        }
+        .social-link:hover {
+            box-shadow: 0 0 22px #ffd600, 0 2px 18px #00c3ff88;
+            background: #fff;
+            transform: scale(1.13) rotate(-7deg);
+        }
+        #toTop {
+            position: fixed;
+            bottom: 34px;
+            right: 34px;
+            background: linear-gradient(90deg, #00c3ff, #ffff1c, #ff5e62);
+            color: #222;
+            border: none;
+            border-radius: 50%;
+            width: 54px;
+            height: 54px;
+            font-size: 2.2em;
+            cursor: pointer;
+            box-shadow: 0 2px 18px #0007;
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.1s;
+            animation: toTopPulse 2.5s infinite alternate;
+        }
+        @keyframes toTopPulse {
+            from { box-shadow: 0 2px 18px #0007;}
+            to { box-shadow: 0 0 32px #00c3ffcc;}
+        }
+        #toTop:hover {
+            background: linear-gradient(90deg, #ff5e62, #ffff1c, #00c3ff);
+            color: #fff;
+            transform: scale(1.15) rotate(-8deg);
+            box-shadow: 0 0 28px #ff5e62bb;
+        }
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .container { max-width: 98vw; }
+            .cards { flex-wrap: wrap; }
+        }
+        @media (max-width: 900px) {
+            .cards { flex-direction: column; align-items: center;}
+            .card { width: 98vw; max-width: 370px;}
+        }
+        @media (max-width: 700px) {
+            .container { padding: 18px 2vw 18px 2vw;}
+            header { padding: 12px 0 6px 0;}
+            .logo-title img { width: 44px; height: 44px;}
+            .logo-title h1 { font-size: 1.3em;}
+            #toTop { right: 10px; bottom: 10px;}
+        }
+    </style>
+    <script>
+        // Cursor astronauta al hacer click
+        document.addEventListener("DOMContentLoaded", function() {
+            document.body.addEventListener("click", function() {
+                document.body.style.cursor = "url('https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f9d1-200d-1f680.png') 16 16, auto";
+            });
+        });
+        // Fondo animado de estrellas, neblina y aurora
+        document.addEventListener("DOMContentLoaded", function() {
+            // Aurora boreal animada
+            const aurora = document.createElement('div');
+            aurora.id = "aurora";
+            document.body.prepend(aurora);
+
+            // Neblina espacial
+            const nebula = document.createElement('div');
+            nebula.id = "nebula";
+            document.body.prepend(nebula);
+
+            // Estrellas
+            const canvas = document.createElement('canvas');
+            canvas.id = "stars";
+            document.body.prepend(canvas);
+            const ctx = canvas.getContext('2d');
+            let w = window.innerWidth, h = window.innerHeight;
+            canvas.width = w; canvas.height = h;
+            let stars = [];
+            for(let i=0;i<260;i++){
+                stars.push({
+                    x: Math.random()*w,
+                    y: Math.random()*h,
+                    r: Math.random()*1.7+0.3,
+                    o: Math.random()*0.5+0.5,
+                    d: Math.random()*2+0.5,
+                    tw: Math.random()*Math.PI*2
+                });
+            }
+            function drawStars(){
+                ctx.clearRect(0,0,w,h);
+                for(let s of stars){
+                    ctx.save();
+                    ctx.globalAlpha = s.o + Math.sin(Date.now()/900*s.d + s.tw)*0.2;
+                    ctx.beginPath();
+                    ctx.arc(s.x,s.y,s.r,0,2*Math.PI);
+                    ctx.fillStyle = "#fff";
+                    ctx.shadowColor = "#fff";
+                    ctx.shadowBlur = 10;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+            function animate(){
+                for(let s of stars){
+                    s.y += 0.09 + s.r*0.09*s.d;
+                    if(s.y > h) { s.y = 0; s.x = Math.random()*w; }
+                }
+                drawStars();
+                requestAnimationFrame(animate);
+            }
+            animate();
+            window.addEventListener('resize',()=>{
+                w = window.innerWidth; h = window.innerHeight;
+                canvas.width = w; canvas.height = h;
+            });
+        });
+        // Botón de regreso arriba
+        document.addEventListener("DOMContentLoaded", function() {
+            const btn = document.createElement("button");
+            btn.id = "toTop";
+            btn.title = "Volver arriba";
+            btn.innerHTML = "↑";
+            document.body.appendChild(btn);
+            btn.addEventListener("click", ()=>window.scrollTo({top:0,behavior:"smooth"}));
+            window.addEventListener("scroll", ()=>{
+                btn.style.display = window.scrollY > 200 ? "flex" : "none";
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="logo-title">
+            <img src="./img/logo de pagina.png" alt="Logo Universo">
+            <h1>MI UNIVERSO</h1>
+        </div>
+        <nav>
+            <a href="login.html">Iniciar Sesión</a>
+            <a href="index.html">mi universo </a>
+            <a href="../tu espacio vs2/index.html">universo particulas</a>
+        </nav>
+    </header>
+    <div class="container">
+        <img class="planet-img" src="./img/logo de pagina.png" alt="Planeta png">
+        <div class="author">Por Jesús Suárez &mdash; Proyecto MI UNIVERSO</div>
+        <p>
+            <strong>Universo 3D</strong> es una plataforma avanzada para la exploración y aprendizaje astronómico.<br>
+            Descubre planetas, estrellas, galaxias y mucho más, todo en 3D y con información científica detallada.
+        </p>
+        <div class="features-title">¿Qué puedes hacer en Universo 3D?</div>
+        <ul>
+            <li>Recorrer el Sistema Solar en 3D con visualización científica y realista.</li>
+            <li>Seleccionar y aprender sobre cada planeta, sus lunas y características físicas.</li>
+            <li>Visualizar órbitas, etiquetas, rayos cósmicos y constelaciones opcionales.</li>
+            <li>Explorar estrellas, galaxias, cúmulos y nebulosas fuera del sistema solar.</li>
+            <li>Consultar datos curiosos y estadísticas en tiempo real.</li>
+            <li>Controlar la velocidad del tiempo y la cámara a tu gusto.</li>
+            <li>Acceder a recursos educativos y galería de imágenes astronómicas.</li>
+        </ul>
+        <div class="section">
+            <div class="section-title">Explora nuestros módulos interactivos:</div>
+            <div class="cards">
+                <div class="card">
+                    <img src="./img/sistema solar.png" alt="Sistema Solar 3D">
+                    <div class="card-title">🌍 Sistema Solar 3D</div>
+                    <div class="card-desc">
+                        Observa y aprende sobre los planetas, sus órbitas y lunas. Interactúa con modelos 3D y obtén información científica de cada cuerpo celeste.
+                    </div>
+                    <a class="btn-ingresar" href="index.html">Entrar al Sistema Solar 3D</a>
+                </div>
+                <div class="card">
+                    <img src="./img/tauro.png" alt="Modo Partículas">
+                    <div class="card-title">✨ Modo Partículas (Tu Espacio)</div>
+                    <div class="card-desc">
+                        Crea y visualiza galaxias, cúmulos, anillos, agujeros negros y más. Experimenta con física de partículas y visualizaciones avanzadas.
+                    </div>
+                    <a class="btn-espacio" href="../tu espacio vs2/index.html">Explorar Modo Partículas</a>
+                </div>
+                <div class="card">
+                    <img src="./img/aprender mas lectura.png" alt="Aprende Astronomía">
+                    <div class="card-title">📚 Aprende Astronomía</div>
+                    <div class="card-desc">
+                        Accede a recursos, videos y artículos científicos para aprender sobre el universo, los planetas, estrellas y mucho más.
+                    </div>
+                    <a class="btn-aprende" href="https://es.wikipedia.org/wiki/Astronom%C3%ADa" target="_blank">Ir a Recursos</a>
+                </div>
+                <div class="card">
+                    <img src="./img/astronauta.png" alt="Galería Espacial">
+                    <div class="card-title">🖼️ Galería Espacial</div>
+                    <div class="card-desc">
+                        Disfruta de una galería de imágenes espectaculares del espacio, nebulosas, galaxias y fenómenos astronómicos reales.
+                    </div>
+                    <a class="btn-extras" href="https://www.nasa.gov/multimedia/imagegallery/" target="_blank">Ver Galería</a>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Sobre el proyecto</div>
+            <p>
+                <b>MI UNIVERSO</b> es una plataforma educativa y de divulgación científica desarrollada con pasión por la astronomía y la tecnología.<br>
+                Ideal para estudiantes, docentes, curiosos y amantes del espacio.<br>
+                <b>¡Sigue explorando, aprendiendo y soñando con el universo!</b>
+            </p>
+        </div>
+    </div>
+    <div class="footer">
+        <span class="footer-glow"></span>
+        &copy; 2025 - Creado por Jesús "Chuy" | Proyecto educativo y de divulgación científica
+        <div class="social">
+            <a href="https://github.com/" target="_blank" title="GitHub" class="social-link github">
+                <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/github.svg" alt="GitHub" class="social-icon">
+            </a>
+            <a href="https://twitter.com/" target="_blank" title="Twitter" class="social-link twitter">
+                <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/twitter.svg" alt="Twitter" class="social-icon">
+            </a>
+            <a href="https://facebook.com/" target="_blank" title="Facebook" class="social-link facebook">
+                <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook" class="social-icon">
+            </a>
+            <a href="https://instagram.com/" target="_blank" title="Instagram" class="social-link instagram">
+                <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram" class="social-icon">
+            </a>
+            <a href="mailto:tuemail@ejemplo.com" title="Email" class="social-link email">
+                <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/gmail.svg" alt="Email" class="social-icon">
+            </a>
+        </div>
+    </div>
+</body>
+</html>
